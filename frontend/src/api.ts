@@ -1,6 +1,7 @@
 import type { EcosystemState, SimulationResult, InterventionRequest } from './types';
 
-const API_BASE = 'http://localhost:8000';
+// Use environment variable for API URL, fallback to localhost for development
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export async function createEcosystem(gridSize: number = 8): Promise<EcosystemState> {
   const response = await fetch(`${API_BASE}/ecosystem/new?grid_size=${gridSize}`, {

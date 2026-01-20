@@ -1,5 +1,4 @@
 import { useMemo, useState, useEffect } from 'react';
-import * as THREE from 'three';
 import type { Species } from '../types';
 
 interface SpeciesMarkersProps {
@@ -68,7 +67,6 @@ export default function SpeciesMarkers({
 
     const result: { position: [number, number, number]; color: string; size: number }[] = [];
     const clipThreshold = 0.15; // Same as terrain shader
-    const halfSize = terrainSize / 2;
 
     // Filter to only species with population
     const activeSpecies = species.filter(s => s.population > 0);
