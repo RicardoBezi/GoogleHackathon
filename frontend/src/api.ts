@@ -43,6 +43,9 @@ export async function loadEcosystem(state: EcosystemState): Promise<EcosystemSta
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(state),
   });
-  if (!response.ok) throw new Error('Failed to load ecosystem');
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || `Server error: ${response.status}`);
+  }
   return response.json();
 }

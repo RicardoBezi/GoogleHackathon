@@ -93,22 +93,37 @@ function App() {
 
     try {
       const text = await file.text();
-      const saveData: SaveFile = JSON.parse(text);
+      let saveData: SaveFile;
 
-      // Validate save file
-      if (!saveData.version || !saveData.ecosystem) {
-        throw new Error('Invalid save file format');
+      try {
+        saveData = JSON.parse(text);
+      } catch {
+        throw new Error('Invalid JSON file');
+      }
+
+      // Check if it's our save format or raw ecosystem state
+      let ecosystemToLoad: EcosystemState;
+
+      if (saveData.version && saveData.ecosystem) {
+        // It's our save format
+        ecosystemToLoad = saveData.ecosystem;
+      } else if ((saveData as unknown as EcosystemState).species && (saveData as unknown as EcosystemState).tiles) {
+        // It's a raw ecosystem state (maybe exported differently)
+        ecosystemToLoad = saveData as unknown as EcosystemState;
+      } else {
+        throw new Error('Invalid save file format - missing required data');
       }
 
       // Load into backend
-      const loadedState = await loadEcosystem(saveData.ecosystem);
+      const loadedState = await loadEcosystem(ecosystemToLoad);
       setEcosystem(loadedState);
       setEvents(saveData.events || []);
-      setNarration(saveData.narration || `Loaded save from ${new Date(saveData.savedAt).toLocaleString()}`);
+      setNarration(saveData.narration || 'Save file loaded successfully!');
       setWarnings([]);
     } catch (err) {
-      setError('Failed to load save file. Make sure it\'s a valid EcoSim save.');
-      console.error(err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to load: ${errorMessage}`);
+      console.error('Load error:', err);
     } finally {
       setIsLoading(false);
     }

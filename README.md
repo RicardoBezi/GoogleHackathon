@@ -91,9 +91,9 @@ Open http://localhost:5173 and start simulating!
 | `/advance` | POST | Advance simulation by one turn |
 | `/state` | GET | Get current ecosystem state |
 
-## License
+## Credits
 
-MIT
+- **Hawaiian Islands Terrain Assets** - Elevation, normals, and color maps from [Code Workshop](https://www.youtube.com/watch?v=xw09pnBNCXk)
 
 ---
 
