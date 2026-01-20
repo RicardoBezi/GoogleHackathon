@@ -107,6 +107,14 @@ async def get_species():
     ]
 
 
+@app.post("/ecosystem/load", response_model=EcosystemState)
+async def load_ecosystem(state: EcosystemState):
+    """Load a saved ecosystem state."""
+    global current_ecosystem
+    current_ecosystem = state
+    return current_ecosystem
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

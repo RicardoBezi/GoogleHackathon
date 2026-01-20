@@ -36,3 +36,13 @@ export async function chatAboutEcosystem(message: string): Promise<string> {
   const data = await response.json();
   return data.response;
 }
+
+export async function loadEcosystem(state: EcosystemState): Promise<EcosystemState> {
+  const response = await fetch(`${API_BASE}/ecosystem/load`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(state),
+  });
+  if (!response.ok) throw new Error('Failed to load ecosystem');
+  return response.json();
+}

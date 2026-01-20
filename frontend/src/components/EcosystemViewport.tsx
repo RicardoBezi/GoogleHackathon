@@ -88,7 +88,7 @@ export default function EcosystemViewport({ species, season }: EcosystemViewport
     // 1. Plant population (producers are the base)
     const plants = species.filter(s => s.diet === 'producer');
     const totalPlants = plants.reduce((sum, s) => sum + s.population, 0);
-    const plantHealth = Math.min(1.0, totalPlants / 8000);
+    const plantHealth = Math.min(1.0, totalPlants / 2000); // 2000 plants = healthy
 
     // 2. Species diversity (more species = healthier)
     const aliveSpecies = species.filter(s => s.population > 0).length;

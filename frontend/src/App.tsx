@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react';
 import type { EcosystemState, SimulationEvent } from './types';
-import { createEcosystem, advanceTurn } from './api';
+import { createEcosystem, advanceTurn, loadEcosystem } from './api';
 import Header from './components/Header';
 import EcosystemViewport from './components/EcosystemViewport';
 import ControlPanel from './components/ControlPanel';
 import SpeciesPanel from './components/SpeciesPanel';
 import EventLog from './components/EventLog';
+
+// Save file format
+interface SaveFile {
+  version: 1;
+  savedAt: string;
+  ecosystem: EcosystemState;
+  events: SimulationEvent[];
+  narration: string;
+}
 
 function App() {
   const [ecosystem, setEcosystem] = useState<EcosystemState | null>(null);
@@ -54,6 +63,57 @@ function App() {
     }
   };
 
+  // Save ecosystem to file
+  const handleSave = () => {
+    if (!ecosystem) return;
+
+    const saveData: SaveFile = {
+      version: 1,
+      savedAt: new Date().toISOString(),
+      ecosystem,
+      events,
+      narration,
+    };
+
+    const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ecosim-turn${ecosystem.turn}-${ecosystem.season}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Load ecosystem from file
+  const handleLoad = async (file: File) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const text = await file.text();
+      const saveData: SaveFile = JSON.parse(text);
+
+      // Validate save file
+      if (!saveData.version || !saveData.ecosystem) {
+        throw new Error('Invalid save file format');
+      }
+
+      // Load into backend
+      const loadedState = await loadEcosystem(saveData.ecosystem);
+      setEcosystem(loadedState);
+      setEvents(saveData.events || []);
+      setNarration(saveData.narration || `Loaded save from ${new Date(saveData.savedAt).toLocaleString()}`);
+      setWarnings([]);
+    } catch (err) {
+      setError('Failed to load save file. Make sure it\'s a valid EcoSim save.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Loading state
   if (!ecosystem && isLoading) {
     return (
@@ -88,7 +148,12 @@ function App() {
 
   return (
     <div className="w-full h-full flex flex-col bg-zinc-950">
-      <Header turn={ecosystem.turn} season={ecosystem.season} />
+      <Header
+        turn={ecosystem.turn}
+        season={ecosystem.season}
+        onSave={handleSave}
+        onLoad={handleLoad}
+      />
 
       {error && (
         <div className="bg-red-900/50 border-b border-red-700 px-4 py-2 text-sm text-red-200">
