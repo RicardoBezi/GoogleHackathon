@@ -7,7 +7,6 @@ import {
 	PerspectiveCamera,
 	Plane,
 	ShaderMaterial,
-	Side,
 	Texture,
 	UniformsLib,
 	UniformsUtils,
@@ -15,6 +14,7 @@ import {
 	Vector4,
 	WebGLRenderTarget,
 } from 'three';
+import type { Side } from 'three';
 
 /**
  * Work based on :

@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { PlaneGeometry, RepeatWrapping, Vector2, Vector3 } from 'three';
+import { PlaneGeometry, RepeatWrapping, Vector2 } from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import { WaterSimple } from './Water/WaterSimple';
@@ -31,7 +31,7 @@ export default function WaterSurfaceSimple({
 	fxMixColor = 0x000000,
 	children,
 }: Props) {
-	const ref = useRef<any>();
+	const ref = useRef<any>(null);
 	const refPointer = useRef(new Vector2(0, 0));
 
 	const gl = useThree((state) => state.gl);
@@ -66,7 +66,7 @@ export default function WaterSurfaceSimple({
 			waterNormals,
 		]
 	);
-	useFrame((state, delta) => {
+	useFrame((_state, delta) => {
 		if (ref.current) ref.current.material.uniforms.time.value += delta / 2;
 	});
 
