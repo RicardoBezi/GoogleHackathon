@@ -3,9 +3,10 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Sky } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import type { Species } from '../types';
-import Water from './Water';
+import WaterSurfaceSimple from '../../WaterSurface/WaterSurfaceSimple';
 import Terrain from './Terrain';
 import SpeciesMarkers from './SpeciesMarkers';
+import { Color } from 'three';
 
 interface EcosystemViewportProps {
   species: Species[];
@@ -55,8 +56,14 @@ function Scene({ species, season, ecosystemHealth }: SceneProps) {
         mieDirectionalG={0.8}
       />
 
-      {/* Ocean - color changes with ecosystem health */}
-      <Water size={120} position={[0, -3.5, 0]} ecosystemHealth={ecosystemHealth} />
+      {/* Ocean - realistic water with reflections */}
+      <WaterSurfaceSimple
+        width={120}
+        length={120}
+        position={[0, -3.5, 0]}
+        waterColor={new Color('#40E0D0').lerp(new Color('#4A5D4A'), 1 - ecosystemHealth).getHex()}
+        distortionScale={0.7}
+      />
 
       {/* Terrain - tinted by ecosystem health and season */}
       <Terrain position={[0, -3, 0]} species={species} season={season} />
