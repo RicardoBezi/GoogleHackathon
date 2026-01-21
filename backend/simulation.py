@@ -5,6 +5,7 @@ Handles world state management and AI-driven simulation.
 
 import os
 import json
+import asyncio
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -222,16 +223,26 @@ Return the complete new state with updated populations, any new events, and a na
 
     prompt = "".join(prompt_parts)
 
-    response = await client.aio.models.generate_content(
-        model="gemini-3-flash-preview",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
-            thinking_config=types.ThinkingConfig(thinking_level="medium"),
-            response_mime_type="application/json",
-            response_schema=SimulationResult,
-        ),
-    )
+    # Retry up to 3 times if Gemini returns empty response
+    for attempt in range(3):
+        response = await client.aio.models.generate_content(
+            model="gemini-3-flash-preview",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                response_mime_type="application/json",
+                response_schema=SimulationResult,
+            ),
+        )
+
+        if response.text is not None:
+            break
+
+        if attempt < 2:
+            await asyncio.sleep(2)  # Wait 2 seconds before retry
+
+    if response.text is None:
+        raise ValueError("Gemini returned an empty response after 3 attempts. Please try again.")
 
     result = SimulationResult.model_validate_json(response.text)
     result.new_state.turn = current_state.turn + 1
@@ -330,8 +341,10 @@ Keep responses concise but informative."""
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_PROMPT,
-            thinking_config=types.ThinkingConfig(thinking_level="low"),
         ),
     )
+
+    if response.text is None:
+        return "Sorry, I couldn't process that request. Please try again."
 
     return response.text
