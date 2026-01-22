@@ -41,7 +41,7 @@ function Scene({ species, season }: SceneProps) {
         length={120}
         position={[0, -3.5, 0]}
         waterColor={0x1E90FF}
-        distortionScale={0.7}
+        distortionScale={3.5}
         alpha={0.6}
       />
 
