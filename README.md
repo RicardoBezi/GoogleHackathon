@@ -8,7 +8,7 @@ Built with Google Gemini for the Google AI Hackathon.
 
 EcoSim AI is an interactive 3D ecosystem simulator where an AI (Google Gemini) acts as the "game master" of nature. Every turn, the AI calculates predator-prey dynamics, seasonal changes, population growth, and environmental events - then narrates what happened in natural language.
 
-<img width="1280" alt="EcoSim AI Screenshot" src="https://github.com/user-attachments/assets/9f02233d-2f51-47fa-88d0-ae2e7c97bbd2" />
+<img width="1271" height="592" alt="image" src="https://github.com/user-attachments/assets/ea6d043f-9121-45ee-863e-9063c9139687" />
 
 **Watch as:**
 - Predators hunt prey across a Hawaiian island ecosystem
